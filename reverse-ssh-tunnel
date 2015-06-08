@@ -10,6 +10,7 @@ Usage: reverse-ssh-tunnel [user@]host[:port] [-f port] [-t port] [-n time] [--ht
   -t port: open ssh port on local host to forward on the client host [default: 22]
   -n time: restore connection time seconds after failure [default: 5]
   --http: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port
+  -d: run as daemon
 EOF
 }
 

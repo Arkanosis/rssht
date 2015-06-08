@@ -23,8 +23,13 @@ reverse-ssh-tunnel [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d
 * **-t port**: open ssh port on local host to forward on the client host [default: 22]
 * **-n time**: restore connection *time* seconds after failure [default: 5]
 * **--http**: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port
+* **-d**: run as daemon
 
 ## EXAMPLES
+
+```
+reverse-ssh-tunnel rsshuser@httptunnel.example.com:80 -f 12345 -t 22 --http -d
+```
 
 ## BUGS
 
