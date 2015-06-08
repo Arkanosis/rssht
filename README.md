@@ -7,7 +7,7 @@
 ## SYNOPSIS
 
 ```
-reverse-ssh-tunnel [user@]host[:port] [-f port] [-t port] [--http]
+reverse-ssh-tunnel [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
 ```
 
 ## DESCRIPTION
@@ -17,10 +17,11 @@ reverse-ssh-tunnel [user@]host[:port] [-f port] [-t port] [--http]
 ## OPTIONS
 
 * **host**: client hostname
-* **user**: username on client host (should have limited rights) (default: same as local username)
-* **port**: open ssh port on client host (default: 22)
-* **-f port**: free port on client host which will redirect to the local host (default: 22000)
-* **-t port**: open ssh port on local host to forward on the client host (default: 22)
+* **user**: username on client host (should have limited rights) [default: same as local username]
+* **port**: open port on client host [default: 22 for ssh, 80 for http]
+* **-f port**: free port on client host which will redirect to the local host [default: 22000]
+* **-t port**: open ssh port on local host to forward on the client host [default: 22]
+* **-n time**: restore connection *time* seconds after failure [default: 5]
 * **--http**: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port
 
 ## EXAMPLES

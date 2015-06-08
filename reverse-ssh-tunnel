@@ -1,0 +1,159 @@
+#! /bin/sh
+
+usage() {
+    cat >&2 <<EOF
+Usage: reverse-ssh-tunnel [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
+  host: client hostname
+  user: username on client host (should have limited rights) [default: same as local username]
+  port: open port on client host [default: 22 for ssh, 80 for http]
+  -f port: free port on client host which will redirect to the local host [default: 22000]
+  -t port: open ssh port on local host to forward on the client host [default: 22]
+  -n time: restore connection time seconds after failure [default: 5]
+  --http: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port
+EOF
+}
+
+check_args() {
+    if test $# -lt 2; then
+	echo "Missing argument to option $1"
+	exit 1
+    fi
+}
+
+if test -z "$USER"; then
+    USER=$(whoami)
+fi
+
+user=
+host=
+port=
+from=22000
+to=22
+time=5
+http=false
+daemon=false
+
+if test $# -eq 0; then
+    usage
+    exit 0
+fi
+
+while test $# -gt 0; do
+    case "$1" in
+	-f)
+	    check_args "$@"
+	    from="$2"
+	    shift
+        ;;
+	-t)
+	    check_args "$@"
+	    to="$2"
+	    shift
+	;;
+	-n)
+	    check_args "$@"
+	    time="$2"
+	    shift
+	;;
+	--http)
+	    http=true
+        ;;
+	-d)
+	    daemon=true
+        ;;
+	*)
+	    if test -n "$host"; then
+		usage
+		exit 1
+	    fi
+	    user=$(echo "$1" | sed -n 's/\(.*\)@.*/\1/p')
+	    host=$(echo "$1" | sed -n 's/\(.*@\)\?\([^:]*\)\(:.*\)\?/\2/p')
+	    port=$(echo "$1" | sed -n 's/[^:]*:\(.*\)/\1/p')
+	;;
+    esac
+    shift
+done
+
+if test -z "$user"; then
+    user="$USER"
+fi
+
+if test -z "$host"; then
+    usage
+    exit 1
+fi
+
+if test -z "$port"; then
+    if $http; then
+	port=80
+    else
+	port=22
+    fi
+fi
+
+# will be wiped at reboot
+pid="/tmp/.reverse-ssh-tunnel.$USER.$host.pid"
+log="/tmp/.reverse-ssh-tunnel.$USER.$host.log"
+
+set_pid() {
+    sed -i "${1}c $2
+" "$pid"
+}
+
+get_pid() {
+    sed -n "${1}p" "$pid"
+}
+
+is_running() {
+    test -L "/proc/$(get_pid $1)/cwd"
+}
+
+err() {
+    echo "$1" | tee -a "$log" >&2
+}
+
+# skip if already running
+if test -f "$pid"; then
+    if is_running 1; then
+	err "reverse-ssh-tunnel is already running"
+	exit 0
+    elif is_running 2; then
+	err "ssh is already running (pid $(get_pid 2)), can't monitor it"
+	exit 1
+    fi
+fi
+
+# fail if pid file is not writable
+> "$log"
+echo "$$\n0\n0" > "$pid"
+if ! test "x$(cat "$pid")" = "x$(echo "$$\n0\n0")"; then
+  err "error: $pid is not writable"
+  exit 1
+fi
+
+if $daemon; then
+    nohup $0 "$user@$host:$port" -f "$from" -t "$to" -n "$time" $($http && echo "--http") >/dev/null 2>&1 &
+    exit 0
+fi
+
+set_pid 1 "$$"
+err "[$(date)] starting"
+while true; do
+    if $http; then
+	if ! is_running 3; then
+	    htc -F 8022 $host:$port >> "$log" 2>&1
+	    set_pid 3 "$!"
+	fi
+	ssh -fxNTC -R$from:localhost:$to $user@localhost -p 8022 >> "$log" 2>&1 &
+    else
+	ssh -fxNTC -R$from:localhost:$to $user@$host -p $port >> "$log" 2>&1 &
+    fi
+    set_pid 2 "$!"
+    wait %1
+    err "[$(date)] stopped"
+    sleep "$time"
+    err "[$(date)] restarting" >&2
+done
+
+# TODO trap ctrl+c, otherwise this will never happen
+rm "$pid"
