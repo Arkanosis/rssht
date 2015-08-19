@@ -31,6 +31,22 @@ reverse-ssh-tunnel [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d
 reverse-ssh-tunnel rsshuser@httptunnel.example.com:80 -f 12345 -t 22 --http -d
 ```
 
+## NOTES
+
+Using a dedicated user on the client host, with no right appart from being able to connect via SSH is recommended. This prevents the local host from doing anything nasty on the client host.
+
+Creating such a user depends on the system. On Debian-based systems, use the following on the client host:
+
+```
+sudo adduser rsshuser # Create the user
+sudo usermod -s /bin/false rsshuser # Forbid anything else than SSH
+sudo mkdir /home/rsshuser/.ssh # Create the SSH configuration directory
+sudo cat local_host_ssh_key.pub >> /home/rsshuser/.ssh/authorized_keys # Allow the local host to connect on the client host as rsshuser
+sudo chown -R rsshuser:rsshuser /home/rsshuser/.ssh # Restore correct ownership
+sudo sed -i 's/AllowUsers .*/& rsshuser/' /etc/ssh/sshd_config # Allow rsshuser to connect via SSH
+sudo restart ssh # Restart SSH
+```
+
 ## BUGS
 
 No bug has been reported yet.
