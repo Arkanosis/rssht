@@ -22,7 +22,7 @@ reverse-ssh-tunnel [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d
 * **-f port**: free port on client host which will redirect to the local host [default: 22000]
 * **-t port**: open ssh port on local host to forward on the client host [default: 22]
 * **-n time**: restore connection *time* seconds after failure [default: 5]
-* **--http**: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port
+* **--http**: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port (using httptunnel's hts)
 * **-d**: run as daemon
 
 ## EXAMPLES
@@ -49,7 +49,7 @@ sudo restart ssh # Restart SSH
 
 ## BUGS
 
-No bug has been reported yet.
+Please report bugs and feature requests on [Github](https://github.com/Arkanosis/reverse-ssh-tunnel/issues)
 
 ## COPYRIGHT
 
