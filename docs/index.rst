@@ -5,10 +5,27 @@ rssht
 
 In other words, it opens a port on a remote client forwarding to a local port so that the remote client can connect to the local host even if the latter is not visible from the outside network (because it's behind some proxy, gateway, firewall or some NAT device).
 
+Installation
+------------
+
+rssht is not yet packaged, but the latest version is available for download `on Github <https://raw.githubusercontent.com/Arkanosis/rssht/master/rssht>`_.
+
+If you plan to use the optional SSH over HTTP feature, you'll also need to install `httptunnel <https://www.gnu.org/software/httptunnel/httptunnel.html>`_.
+
+On Debian-based systems, use the following on the local host:
+
+::
+
+     sudo apt-get install httptunnel
+     sudo wget 'https://raw.githubusercontent.com/Arkanosis/rssht/master/rssht' -O /usr/bin/rssht
+     sudo chmod a+x /usr/bin/rssht
+
+Note that you can of course install httptunnel and rssht anywhere, as long as the binaries are in your :code:`$PATH`.
+
 Usage
 -----
 
-**rssht** is used as follow:::
+**rssht** is used as follow::
 
     rssht [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
 
@@ -24,8 +41,7 @@ The following options are supported:
 * **--http**: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port (using httptunnel's hts)
 * **-d**: run as daemon
 
-Examples
---------
+Example:
 
 ::
 
@@ -36,7 +52,9 @@ Security considerations
 
 Using a dedicated user on the client host, with no right appart from being able to connect via SSH is recommended. This prevents the local host from doing anything nasty on the client host.
 
-Creating such a user depends on the system. On Debian-based systems, use the following on the client host:::
+Creating such a user depends on the system. On Debian-based systems, use the following on the client host:
+
+::
 
     sudo adduser rssht-user # Create the user
     sudo usermod -s /bin/false rssht-user # Forbid anything else than SSH
