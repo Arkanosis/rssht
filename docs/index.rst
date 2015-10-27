@@ -10,7 +10,7 @@ Installation
 
 rssht is not yet packaged, but the latest version is available for download `on Github <https://raw.githubusercontent.com/Arkanosis/rssht/master/rssht>`_.
 
-If you plan to use the optional SSH over HTTP feature, you'll also need to install `httptunnel <https://www.gnu.org/software/httptunnel/httptunnel.html>`_.
+If you plan to use the optional SSH over HTTP feature, you'll also need to install `httptunnel <https://www.gnu.org/software/httptunnel/httptunnel.html>`_ on both the local host *and* the client host.
 
 On Debian-based systems, use the following on the local host:
 
@@ -19,6 +19,12 @@ On Debian-based systems, use the following on the local host:
      sudo apt-get install httptunnel
      sudo wget 'https://raw.githubusercontent.com/Arkanosis/rssht/master/rssht' -O /usr/bin/rssht
      sudo chmod a+x /usr/bin/rssht
+
+And if you want to use SSH over HTTP, use the following on the client host:
+
+::
+
+     sudo apt-get install httptunnel
 
 Note that you can of course install httptunnel and rssht anywhere, as long as the binaries are in your :code:`$PATH`.
 
@@ -46,6 +52,12 @@ Example:
 ::
 
     rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http -d
+
+If you want to use SSH over HTTP, you also need to have :code:`hts` running on the client host:
+
+::
+
+    hts -F localhost:22 80
 
 Security considerations
 -----------------------
