@@ -1,26 +1,19 @@
 rssht
 =====
 
-NAME
-----
+**rssht** creates a reverse SSH tunnel with optional SSH over HTTP.
 
-**rssht** - Reverse SSH tunnel with optional SSH over HTTP
+In other words, it opens a port on a remote client forwarding to a local port so that the remote client can connect to the local host even if the latter is not visible from the outside network (because it's behind some proxy, gateway, firewall or some NAT device).
 
-SYNOPSIS
---------
+Usage
+-----
 
-::
+**rssht** is used as follow:::
 
     rssht [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
 
 
-DESCRIPTION
------------
-
-**rssht** opens a port on a remote client forwarding to a local port so that the remote client can connect to the local host even if the latter is not visible from the outside network.
-
-OPTIONS
--------
+The following options are supported:
 
 * **host**: client hostname
 * **user**: username on client host (should have limited rights) [default: same as local username]
@@ -31,15 +24,15 @@ OPTIONS
 * **--http**: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port (using httptunnel's hts)
 * **-d**: run as daemon
 
-EXAMPLES
+Examples
 --------
 
 ::
 
     rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http -d
 
-NOTES
------
+Security considerations
+-----------------------
 
 Using a dedicated user on the client host, with no right appart from being able to connect via SSH is recommended. This prevents the local host from doing anything nasty on the client host.
 
@@ -53,24 +46,45 @@ Creating such a user depends on the system. On Debian-based systems, use the fol
     sudo sed -i 's/AllowUsers .*/& rssht-user/' /etc/ssh/sshd_config # Allow rssht-user to connect via SSH
     sudo restart ssh # Restart SSH
 
-BUGS
-----
+Contributing
+------------
 
-Please report bugs and feature requests on `Github <https://github.com/Arkanosis/rssht/issues>`_.
+You can contribute by reporting bugs and feature requests on `Github <https://github.com/Arkanosis/rssht/issues>`_.
 
-COPYRIGHT
----------
+`Pull requests <https://github.com/Arkanosis/rssht/pulls>`_ for code and documentation are welcome too.
 
-rssht is Copyright (C) 2015 Jérémie Roquet <jroquet@arkanosis.net>.
+License
+-------
 
-rssht is licensed under the MIT license.
+Copyright (C) 2015 Jérémie Roquet <jroquet@arkanosis.net>
 
-THANKS
-------
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-Thanks to Xavier Roche <roche@httrack.com>, the author of pepette, the script from which the inspiration for rssht comes from.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-SEE ALSO
---------
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 
-openssh, corkscrew, httptunnel
+
+Acknowledgments
+---------------
+
+The author would like to thank Xavier Roche <roche@httrack.com>, the author of pepette, the script from which the inspiration for rssht comes from.
+
+Related projects
+----------------
+
+The following projects are related: `OpenSSH <http://www.openssh.com/>`_, `autossh <http://www.harding.motd.ca/autossh/>`_, `Corkscrew <http://www.agroman.net/corkscrew/>`_, `httptunnel <https://www.gnu.org/software/httptunnel/httptunnel.html>`_.
+
+The current version of rssht is heavily based on OpenSSH and rely on httptunnel for the optional SSH over HTTP.

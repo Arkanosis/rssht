@@ -1,20 +1,18 @@
 # rssht [![License](http://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE) [![Documentation Status](https://readthedocs.org/projects/rssht/badge/?version=latest)](http://rssht.readthedocs.org/en/latest/?badge=latest)
 
-## NAME
+**rssht** creates a reverse SSH tunnel with optional SSH over HTTP.
 
-**rssht** - Reverse SSH tunnel with optional SSH over HTTP
+In other words, it opens a port on a remote client forwarding to a local port so that the remote client can connect to the local host even if the latter is not visible from the outside network (because it's behind some proxy, gateway, firewall or some NAT device).
 
-## SYNOPSIS
+## Usage
+
+**rssht** is used as follow:
 
 ```
 rssht [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
 ```
 
-## DESCRIPTION
-
-**rssht** opens a port on a remote client forwarding to a local port so that the remote client can connect to the local host even if the latter is not visible from the outside network.
-
-## OPTIONS
+The following options are supported:
 
 * **host**: client hostname
 * **user**: username on client host (should have limited rights) [default: same as local username]
@@ -25,26 +23,24 @@ rssht [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
 * **--http**: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port (using httptunnel's hts)
 * **-d**: run as daemon
 
-## EXAMPLES
+Example:
 
 ```
 rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http -d
 ```
 
-## DOCUMENTATION
+## Documentation
 
 The complete documentation is available on [Read the Docs](http://rssht.readthedocs.org/).
 
-## BUGS
+## Reporting bugs
 
 Please report bugs and feature requests on [Github](https://github.com/Arkanosis/rssht/issues).
 
-## COPYRIGHT
+## License
 
-rssht is Copyright (C) 2015 Jérémie Roquet <jroquet@arkanosis.net>.
+rssht is copyright (C) 2015 Jérémie Roquet <jroquet@arkanosis.net> and licensed under the MIT license.
 
-rssht is licensed under the MIT license.
+## Related projects
 
-## SEE ALSO
-
-openssh, corkscrew, httptunnel
+openssh, autossh, corkscrew, httptunnel
