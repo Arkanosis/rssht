@@ -3,7 +3,7 @@ rssht
 
 **rssht** creates a reverse SSH tunnel with optional SSH over HTTP.
 
-In other words, it opens a port on a remote client forwarding to a local port so that the remote client can connect to the local host even if the latter is not visible from the outside network (because it's behind some proxy, gateway, firewall or some NAT device).
+In other words, it opens a port on a *remote client* (ie. the machine you want to connect from) forwarding to a port on the *local host* (ie. the machine you want to connect to) so that the remote client can connect to the local host even if the latter is not visible from the outside network (because it's behind some proxy, gateway, firewall or some NAT device).
 
 Installation
 ------------
@@ -16,11 +16,10 @@ On Debian-based systems, use the following on the local host:
 
 ::
 
-     sudo apt-get install httptunnel
      sudo wget 'https://raw.githubusercontent.com/Arkanosis/rssht/master/rssht' -O /usr/bin/rssht
      sudo chmod a+x /usr/bin/rssht
 
-And if you want to use SSH over HTTP, use the following on the client host:
+And if you want to use SSH over HTTP, use the following on both the local host *and* the client host:
 
 ::
 
@@ -31,10 +30,11 @@ Note that you can of course install httptunnel and rssht anywhere, as long as th
 Usage
 -----
 
-**rssht** is used as follow::
+rssht must be run on the *local host* (ie. the machine you want to connect to). It is used as follow:
+
+::
 
     rssht [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
-
 
 The following options are supported:
 
@@ -53,11 +53,27 @@ Example:
 
     rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http -d
 
-If you want to use SSH over HTTP, you also need to have :code:`hts` running on the client host:
+If you want to use SSH over HTTP, you also need to have :code:`hts` running on the *client host* (ie. the machine you want to connect from):
 
 ::
 
     hts -F localhost:22 80
+
+Then, you can use ssh on the *client host* to connect to the *local host* as follow:
+
+::
+
+    ssh localhost -p 12345
+
+If the connection is lost, rssht will restore the tunnel after a few seconds, so you can connect again.
+
+If you're using SSH over HTTP and for some reason hts is hanging after losing the connection (it happens), kill it, start it again and wait for rssht to restore the tunnel.
+
+You can monitor rssht's attempts to establish the tunnel by running the following command on the *client host*:
+
+::
+
+    tail -f /var/log/auth.log
 
 Security considerations
 -----------------------
@@ -117,4 +133,4 @@ Related projects
 
 The following projects are related: `OpenSSH <http://www.openssh.com/>`_, `autossh <http://www.harding.motd.ca/autossh/>`_, `Corkscrew <http://www.agroman.net/corkscrew/>`_, `httptunnel <https://www.gnu.org/software/httptunnel/httptunnel.html>`_.
 
-The current version of rssht is heavily based on OpenSSH and rely on httptunnel for the optional SSH over HTTP.
+The current version of rssht is heavily based on OpenSSH and relies on httptunnel for the optional SSH over HTTP.
