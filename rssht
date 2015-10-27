@@ -145,9 +145,11 @@ while true; do
 	    htc -F 8022 $host:$port >> "$log" 2>&1
 	    set_pid 3 "$!"
 	fi
-	ssh -fxNTC -R$from:localhost:$to $user@localhost -p 8022 >> "$log" 2>&1 &
+	# TODO FIXME does not block (because no tty?)
+	ssh -nxNTC -R$from:localhost:$to $user@localhost -p 8022 >> "$log" 2>&1 &
     else
-	ssh -fxNTC -R$from:localhost:$to $user@$host -p $port >> "$log" 2>&1 &
+	# TODO FIXME does not block (because no tty?)
+	ssh -nxNTC -R$from:localhost:$to $user@$host -p $port >> "$log" 2>&1 &
     fi
     set_pid 2 "$!"
     wait %1
