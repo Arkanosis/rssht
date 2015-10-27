@@ -1,4 +1,4 @@
-# rssht
+# rssht [![License](http://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE) [![Documentation Status](https://readthedocs.org/projects/rssht/badge/?version=latest)](http://rssht.readthedocs.org/en/latest/?badge=latest)
 
 ## NAME
 
@@ -31,21 +31,9 @@ rssht [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
 rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http -d
 ```
 
-## NOTES
+## DOCUMENTATION
 
-Using a dedicated user on the client host, with no right appart from being able to connect via SSH is recommended. This prevents the local host from doing anything nasty on the client host.
-
-Creating such a user depends on the system. On Debian-based systems, use the following on the client host:
-
-```
-sudo adduser rssht-user # Create the user
-sudo usermod -s /bin/false rssht-user # Forbid anything else than SSH
-sudo mkdir /home/rssht-user/.ssh # Create the SSH configuration directory
-sudo cat local_host_ssh_key.pub >> /home/rssht-user/.ssh/authorized_keys # Allow the local host to connect on the client host as rsshuser
-sudo chown -R rssht-user:rsshuser /home/rsshuser/.ssh # Restore correct ownership
-sudo sed -i 's/AllowUsers .*/& rssht-user/' /etc/ssh/sshd_config # Allow rsshuser to connect via SSH
-sudo restart ssh # Restart SSH
-```
+The complete documentation is available on [Read the Docs](http://rssht.readthedocs.org/).
 
 ## BUGS
 
@@ -56,10 +44,6 @@ Please report bugs and feature requests on [Github](https://github.com/Arkanosis
 rssht is Copyright (C) 2015 Jérémie Roquet <jroquet@arkanosis.net>.
 
 rssht is licensed under the MIT license.
-
-## THANKS
-
-Thanks to Xavier Roche <roche@httrack.com>, the author of pepette, the script from which the inspiration for rssht comes from.
 
 ## SEE ALSO
 
