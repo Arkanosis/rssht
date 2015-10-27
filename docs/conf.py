@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# reverse-ssh-tunnel documentation build configuration file, created by
+# rssht documentation build configuration file, created by
 # sphinx-quickstart on Tue Oct 27 03:02:37 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -43,7 +43,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'reverse-ssh-tunnel'
+project = u'rssht'
 copyright = u'2015, Jérémie Roquet'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -176,7 +176,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'reverse-ssh-tunneldoc'
+htmlhelp_basename = 'rsshtdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -196,7 +196,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'reverse-ssh-tunnel.tex', u'reverse-ssh-tunnel Documentation',
+  ('index', 'rssht.tex', u'rssht Documentation',
    u'Jérémie Roquet', 'manual'),
 ]
 
@@ -226,7 +226,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'reverse-ssh-tunnel', u'reverse-ssh-tunnel Documentation',
+    ('index', 'rssht', u'rssht Documentation',
      [u'Jérémie Roquet'], 1)
 ]
 
@@ -240,8 +240,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'reverse-ssh-tunnel', u'reverse-ssh-tunnel Documentation',
-   u'Jérémie Roquet', 'reverse-ssh-tunnel', 'One line description of project.',
+  ('index', 'rssht', u'rssht Documentation',
+   u'Jérémie Roquet', 'rssht', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -261,13 +261,13 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'reverse-ssh-tunnel'
+epub_title = u'rssht'
 epub_author = u'Jérémie Roquet'
 epub_publisher = u'Jérémie Roquet'
 epub_copyright = u'2015, Jérémie Roquet'
 
 # The basename for the epub file. It defaults to the project name.
-#epub_basename = u'reverse-ssh-tunnel'
+#epub_basename = u'rssht'
 
 # The HTML theme for the epub output. Since the default themes are not optimized
 # for small screen space, using the same theme for HTML and epub output is
