@@ -55,6 +55,8 @@ Please report bugs and feature requests on [Github](https://github.com/Arkanosis
 
 reverse-ssh-tunnel is Copyright (C) 2015 Jérémie Roquet <jroquet@arkanosis.net>.
 
+reverse-ssh-tunnel is licensed under the MIT license.
+
 ## THANKS
 
 Thanks to Xavier Roche <roche@httrack.com>, the author of pepette, the script from which the inspiration for reverse-ssh-tunnel comes from.
