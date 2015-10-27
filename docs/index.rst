@@ -30,7 +30,7 @@ Note that you can of course install httptunnel and rssht anywhere, as long as th
 Usage
 -----
 
-rssht must be run on the *local host* (ie. the machine you want to connect to). It is used as follow:
+:code:`rssht` must be run on the *local host* (ie. the machine you want to connect to). It is used as follow:
 
 ::
 
@@ -44,7 +44,7 @@ The following options are supported:
 * **-f port**: free port on client host which will redirect to the local host [default: 22000]
 * **-t port**: open ssh port on local host to forward on the client host [default: 22]
 * **-n time**: restore connection *time* seconds after failure [default: 5]
-* **--http**: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port (using httptunnel's hts)
+* **--http**: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port (using httptunnel's :code:`hts`)
 * **-d**: run as daemon
 
 Example:
@@ -67,7 +67,7 @@ Then, you can use ssh on the *client host* to connect to the *local host* as fol
 
 If the connection is lost, rssht will restore the tunnel after a few seconds, so you can connect again.
 
-If you're using SSH over HTTP and for some reason hts is hanging after losing the connection (it happens), kill it, start it again and wait for rssht to restore the tunnel.
+If you're using SSH over HTTP and for some reason :code:`hts` is hanging after losing the connection (it happens), kill it, start it again and wait for rssht to restore the tunnel.
 
 You can monitor rssht's attempts to establish the tunnel by running the following command on the *client host*:
 
