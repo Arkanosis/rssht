@@ -15,7 +15,7 @@ Getting rssht and its dependencies
 
 rssht is not yet packaged, but the latest version is available for download `on Github <https://raw.githubusercontent.com/Arkanosis/rssht/master/rssht>`_.
 
-If you plan to use the optional SSH over HTTP feature, you'll also need to install `httptunnel <https://www.gnu.org/software/httptunnel/httptunnel.html>`_ on both the local host *and* the client host.
+If you plan to use the optional SSH over HTTP feature, you will also need to install `httptunnel <https://www.gnu.org/software/httptunnel/httptunnel.html>`_ on both the local host *and* the client host.
 
 On Debian-based systems, use the following on the local host:
 
@@ -44,14 +44,33 @@ A and D on the *local host* may be the same user — and will be, in most cases,
 
 Obviously, user C on the *remote client* must be able to connect to the *local host* as user D, as it would have to in a normal SSH connection. Any authentification method would work.
 
-Maybe less obviously, user A on the *local host* must be able to connect to the *remote client* as user B. Since it will connect unattendedly, the authentification should be passwordless and passphraseless. It is recommended to use public key authentification with a passphraseless public key.
+Maybe less obviously, user A on the *local host* must be able to connect to the *remote client* as user B. Since it will connect unattendedly, the authentification should be passwordless and passphraseless. It is recommended to use public key authentification with a passphraseless private key.
 
-.. TODO ssh-keygen, authorized_keys, ControlMaster / ControlPersist,  and so on…
+.. TODO FIXME explain how to manage several keys for user A, so that the passphraseless private key is only used for the tunnel
+
+Once you have a passphraseless private key for the user A, you have to add the associated public key to the list of authorized keys to log in as user B on the remote client. To do so, copy this public key in the user B's :code:`~/.ssh/authorized_keys` on the remote client.
+
+To avoid multiple SSH connections between the same hosts, it is recommended to use the :code:`ControlMaster` feature of the OpenSSH client, which enables multiplexing. To enable it, put the following at the end of the user C's :code:`~/.ssh/config` on the remote client:
+
+::
+
+    Host *
+    ControlMaster auto
+    ControlPath ~/.ssh/master-%r@%h:%p
+
+You may want to use the :code:`ControlPersist` feature as well to stay connected even after closing the terminal. To enable it, add it below the lines you have already added to enable multiplexing:
+
+::
+
+    Host *
+    ControlMaster auto
+    ControlPath ~/.ssh/master-%r@%h:%p
+    ControlPersist yes
 
 Security considerations
 ```````````````````````
 
-Using a dedicated user on the client host (user B in the `Setting up SSH`_ section), with no right appart from being able to connect via SSH is recommended. This prevents the local host from doing anything nasty on the client host. This is particulary important if the local host is outside of your control (eg. a corporate host), and even more important as it will connect using a passphraseless public key.
+Using a dedicated user on the client host (user B in the `Setting up SSH`_ section), with no right appart from being able to connect via SSH is recommended. This prevents the local host from doing anything nasty on the client host. This is particulary important if the local host is outside of your control (eg. a corporate host), and even more important as it will connect using a passphraseless private key.
 
 Creating such a user depends on the system. On Debian-based systems, use the following on the client host to create a user named “rssht-user”:
 
@@ -105,13 +124,49 @@ Then, you can use ssh on the *client host* to connect to the *local host* as fol
 
 If the connection is lost, rssht will restore the tunnel after a few seconds, so you can connect again.
 
-If you're using SSH over HTTP and for some reason :code:`hts` is hanging after losing the connection (it happens), kill it, start it again and wait for rssht to restore the tunnel.
+If you are using SSH over HTTP and for some reason :code:`hts` is hanging after losing the connection (it happens), kill it, start it again and wait for rssht to restore the tunnel.
 
-You can monitor rssht's attempts to establish the tunnel by running the following command on the *client host*:
+If you are looking for a persistent reverse SSH tunnel, then you probably want it to be restored even if the local host is rebooted. The recommended approach is to start rssht using crontab.
+
+::
+
+    crontab -e
+
+This command opens a list of tasks to be run by the cron service. Add a line as follow to have rssht started when the local host is rebooted:
+
+::
+
+    @reboot rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http 2>&1
+
+Troubleshooting
+---------------
+
+There is unfortunately a lot of ways for the reverse tunnel not to work.
+
+The place to start troubleshooting is the authentification log file on the *remote client*:
 
 ::
 
     tail -f /var/log/auth.log
+
+Login attempts from the *local host* will be logged there and it is often possible to understand what is going wrong just by looking at this file.
+
+If nothing is being written there, even after the specified rssht delay (:code:`-n` flag), it probably means that rssht is not even able to access the SSH port on the remote client.
+Double check the open port on the client host and, if you are using SSH over HTTP (:code:`--http` flag), make sure that :code:`hts` is running on the remote client, and double check its input and output ports as well (the input port must match the open port specified when running :code:`rssht` and the ouput port must match an open port fort a running :code:`sshd` on the client host).
+
+You can use telnet from the local host to check if the remote client is reachable:
+
+::
+
+    telnet httptunnel.example.com 80
+
+If you cannot get a connection, then there might be some NAT device (such as a router) hiding the remote client from the outside network. If so, the NAT device must be configured to route the port used by rssht to the actual client host.
+
+If it hangs, it can be because the connection has been lost and :code:`hts` is hanging on the remote client. Kill it and restart it, then wait again for rssht's connection delay.
+
+If it answers, but not with a OpenSSH greeting message, it is probably because either :code:`sshd` is not running (in that case, start the ssh service) or running but listening on the wrong port (in that case, adjust the destination port with :code:`hts` or by changing sshd_config and restarting the ssh service).
+
+If it answers with a OpenSSH greeting message, then it should be good.
 
 Software recommendations
 ------------------------
@@ -166,7 +221,7 @@ Acknowledgements
 
 The author would like to thank the following people:
 
-* `Anne-Sophie Denomme-Pichon <https://github.com/Oodnadatta>`_, for her precious feedback and extensive testing;
+* `Anne-Sophie Denommé-Pichon <https://github.com/Oodnadatta>`_, for her precious feedback and extensive testing;
 * `Richard Groux <https://github.com/rgroux>`_, for his tips with SSH's ControlMaster and ControlPersist;
 * `Xavier Roche <https://github.com/xroche>`_, the author of pepette, the script from which the inspiration for rssht comes from.
 
