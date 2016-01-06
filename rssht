@@ -93,8 +93,8 @@ if test -z "$port"; then
 fi
 
 # will be wiped at reboot
-pid="/tmp/.rssht.$USER.$host.pid"
-log="/tmp/.rssht.$USER.$host.log"
+pid="/tmp/.rssht.$USER.$host.$port.pid"
+log="/tmp/.rssht.$USER.$host.$port.log"
 
 set_pid() {
     sed -i "${1}c $2
