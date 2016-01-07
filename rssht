@@ -8,6 +8,7 @@ Usage: rssht [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
   port: open port on client host [default: 22 for ssh, 80 for http]
   -f port: free port on client host which will redirect to the local host [default: 22000]
   -t port: open ssh port on local host to forward on the client host [default: 22]
+  -k key: the SSH private key to use exclusively on the local host [default: ~/.ssh/rssht_id_rsa]
   -n time: restore connection time seconds after failure [default: 5]
   --http: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port
   -d: run as daemon
@@ -28,6 +29,7 @@ fi
 user=
 host=
 port=
+key=
 from=22000
 to=22
 time=5
@@ -51,6 +53,11 @@ while test $# -gt 0; do
 	    to="$2"
 	    shift
 	;;
+	-k)
+	    check_args "$@"
+	    key="$2"
+	    shift
+        ;;
 	-n)
 	    check_args "$@"
 	    time="$2"
@@ -90,6 +97,12 @@ if test -z "$port"; then
     else
 	port=22
     fi
+fi
+
+if test -z "$key"; then
+   if test -f ~/.ssh/rssht_id_rsa; then
+       key=~/.ssh/rssht_id_rsa
+   fi
 fi
 
 # will be wiped at reboot
@@ -145,11 +158,18 @@ while true; do
 	    htc -F 8022 $host:$port >> "$log" 2>&1
 	    set_pid 3 "$!"
 	fi
+	cmd_host=localhost
+	cmd_port=8022
+    else
+	cmd_host=$host
+	cmd_port=$port
+    fi
+    if test -z "$key"; then
 	# TODO FIXME does not block (because no tty?)
-	ssh -nxNTC -R$from:localhost:$to $user@localhost -p 8022 >> "$log" 2>&1 &
+	ssh -nxNTC -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
     else
 	# TODO FIXME does not block (because no tty?)
-	ssh -nxNTC -R$from:localhost:$to $user@$host -p $port >> "$log" 2>&1 &
+	ssh -nxNTC -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
     fi
     set_pid 2 "$!"
     wait %1

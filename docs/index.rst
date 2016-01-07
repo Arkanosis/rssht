@@ -46,7 +46,13 @@ Obviously, user C on the *remote client* must be able to connect to the *local h
 
 Maybe less obviously, user A on the *local host* must be able to connect to the *remote client* as user B. Since it will connect unattendedly, the authentification should be passwordless and passphraseless. It is recommended to use public key authentification with a passphraseless private key.
 
-.. TODO FIXME explain how to manage several keys for user A, so that the passphraseless private key is only used for the tunnel
+To create such key, use the following command:
+
+::
+
+    ssh-keygen -t rsa -b 4096 -N '' -f ~/.ssh/rssht_id_rsa
+
+Don't use that key for anything but :code:`rssht` itself since the lack of passphrase is a serious security issue for most applications (not for rssht if you follow the recommendations in the `Security considerations`_ section below).
 
 Once you have a passphraseless private key for the user A, you have to add the associated public key to the list of authorized keys to log in as user B on the remote client. To do so, copy this public key in the user B's :code:`~/.ssh/authorized_keys` on the remote client.
 
@@ -78,9 +84,9 @@ Creating such a user depends on the system. On Debian-based systems, use the fol
 
     sudo adduser rssht-user # Create the user
     sudo usermod -s /bin/false rssht-user # Forbid anything else than SSH
-    sudo mkdir /home/rssht-user/.ssh # Create the SSH configuration directory
-    sudo cat local_host_ssh_key.pub >> /home/rssht-user/.ssh/authorized_keys # Allow the local host to connect on the client host as rssht-user
-    sudo chown -R rssht-user:rssht-user /home/rssht-user/.ssh # Restore correct ownership
+    sudo mkdir ~rssht-user/.ssh # Create the SSH configuration directory
+    sudo cat rssht_id_rsa.pub >> ~rssht-user/.ssh/authorized_keys # Allow the local host to connect on the client host as rssht-user; the rssht_id_rsa.pub file must have been copied from the local host
+    sudo chown -R rssht-user:rssht-user ~rssht-user/.ssh # Restore correct ownership
     sudo sed -i 's/AllowUsers .*/& rssht-user/' /etc/ssh/sshd_config # Allow rssht-user to connect via SSH
     sudo restart ssh # Restart SSH
 
@@ -91,7 +97,7 @@ Usage
 
 ::
 
-    rssht [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
+    rssht [user@]host[:port] [-f port] [-t port] [-k key] [-n time] [--http] [-d]
 
 The following options are supported:
 
@@ -100,6 +106,7 @@ The following options are supported:
 * **port**: open port on client host [default: 22 for SSH, 80 for HTTP]
 * **-f port**: free port on client host which will redirect to the local host [default: 22000]
 * **-t port**: open SSH port on local host to forward on the client host [default: 22]
+* **-k key**: the SSH private key to use exclusively on the local host [default: ~/.ssh/rssht_id_rsa]
 * **-n time**: restore connection *time* seconds after failure [default: 5]
 * **--http**: use SSH over HTTP instead of plain ssh. The client port must forward HTTP traffic to an open SSH port (using httptunnel's :code:`hts`)
 * **-d**: run as daemon
@@ -136,7 +143,7 @@ This command opens a list of tasks to be run by the cron service. Add a line as 
 
 ::
 
-    @reboot rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http 2>&1
+    @reboot /usr/bin/rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http > /dev/null 2>&1
 
 Troubleshooting
 ---------------
