@@ -166,10 +166,10 @@ while true; do
     fi
     if test -z "$key"; then
 	# TODO FIXME does not block (because no tty?)
-	ssh -nxNTC -o HostKeyAlias=rssht_${cmd_host}_$cmd_port -o CheckHostIP=no -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+	ssh -nxNTC -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
     else
 	# TODO FIXME does not block (because no tty?)
-	ssh -nxNTC -o HostKeyAlias=rssht_${cmd_host}_$cmd_port -o CheckHostIP=no -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+	ssh -nxNTC -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
     fi
     set_pid 2 "$!"
     wait %1
