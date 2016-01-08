@@ -145,6 +145,10 @@ This command opens a list of tasks to be run by the cron service. Add a line as 
 
     @reboot /usr/bin/rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http > /dev/null 2>&1
 
+Note that for rssht to restore the tunnel, the remote client's public key must be present in the local host's (ie. the user A's) :code:`~/.ssh/known_hosts`.
+
+Just run rssht manually as user A on the first time: this will add the public key to the :code:`~/.ssh/known_hosts` after confirmation and subsequent connexions won't ask for confirmation again.
+
 Troubleshooting
 ---------------
 
