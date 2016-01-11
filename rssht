@@ -122,6 +122,17 @@ is_running() {
     test -L "/proc/$(get_pid $1)/cwd"
 }
 
+random_port() {
+    echo $(($1 + $(shuf -i 0-99 -n 1)))
+}
+
+free_port() {
+    ss -tan | \
+        awk -v port=$1 'NR > 1 { gsub(/.*:/, "", $4); if (int($4) >= port) { print $4 } }' | \
+        sort -un | \
+        awk -v port=$1 '$0 == port { port++; next }; { exit }; END { print port }'
+}
+
 err() {
     echo "$1" | tee -a "$log" >&2
 }
@@ -141,8 +152,8 @@ fi
 > "$log"
 echo "$$\n0\n0" > "$pid"
 if ! test "x$(cat "$pid")" = "x$(echo "$$\n0\n0")"; then
-  err "error: $pid is not writable"
-  exit 1
+    err "error: $pid is not writable"
+    exit 1
 fi
 
 if $daemon; then
@@ -150,16 +161,21 @@ if $daemon; then
     exit 0
 fi
 
+# FIXME The following approach to get a free port is unfortunately not race-free since
+# the free port detection is not atomic (hence the randomization, to lower the race
+# probability). This is because we can't reserve a free port for future use by SSH.
+http_port=$(free_port $(random_port 8022))
+
 set_pid 1 "$$"
 err "[$(date)] starting"
 while true; do
     if $http; then
 	if ! is_running 3; then
-	    htc -F 8022 $host:$port >> "$log" 2>&1
+	    htc -F $http_port $host:$port >> "$log" 2>&1
 	    set_pid 3 "$!"
 	fi
 	cmd_host=localhost
-	cmd_port=8022
+	cmd_port=$http_port
     else
 	cmd_host=$host
 	cmd_port=$port
