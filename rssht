@@ -17,8 +17,8 @@ EOF
 
 check_args() {
     if test $# -lt 2; then
-	echo "Missing argument to option $1"
-	exit 1
+        echo "Missing argument to option $1"
+        exit 1
     fi
 }
 
@@ -43,41 +43,41 @@ fi
 
 while test $# -gt 0; do
     case "$1" in
-	-f)
-	    check_args "$@"
-	    from="$2"
-	    shift
+        -f)
+            check_args "$@"
+            from="$2"
+            shift
         ;;
-	-t)
-	    check_args "$@"
-	    to="$2"
-	    shift
-	;;
-	-k)
-	    check_args "$@"
-	    key="$2"
-	    shift
+        -t)
+            check_args "$@"
+            to="$2"
+            shift
         ;;
-	-n)
-	    check_args "$@"
-	    time="$2"
-	    shift
-	;;
-	--http)
-	    http=true
+        -k)
+            check_args "$@"
+            key="$2"
+            shift
         ;;
-	-d)
-	    daemon=true
+        -n)
+            check_args "$@"
+            time="$2"
+            shift
         ;;
-	*)
-	    if test -n "$host"; then
-		usage
-		exit 1
-	    fi
-	    user=$(echo "$1" | sed -n 's/\(.*\)@.*/\1/p')
-	    host=$(echo "$1" | sed -n 's/\(.*@\)\?\([^:]*\)\(:.*\)\?/\2/p')
-	    port=$(echo "$1" | sed -n 's/[^:]*:\(.*\)/\1/p')
-	;;
+        --http)
+            http=true
+        ;;
+        -d)
+            daemon=true
+        ;;
+        *)
+            if test -n "$host"; then
+                usage
+                exit 1
+            fi
+            user=$(echo "$1" | sed -n 's/\(.*\)@.*/\1/p')
+            host=$(echo "$1" | sed -n 's/\(.*@\)\?\([^:]*\)\(:.*\)\?/\2/p')
+            port=$(echo "$1" | sed -n 's/[^:]*:\(.*\)/\1/p')
+        ;;
     esac
     shift
 done
@@ -93,9 +93,9 @@ fi
 
 if test -z "$port"; then
     if $http; then
-	port=80
+        port=80
     else
-	port=22
+        port=22
     fi
 fi
 
@@ -140,11 +140,11 @@ err() {
 # skip if already running
 if test -f "$pid"; then
     if is_running 1; then
-	err "rssht is already running"
-	exit 0
+        err "rssht is already running"
+        exit 0
     elif is_running 2; then
-	err "ssh is already running (pid $(get_pid 2)), can't monitor it"
-	exit 1
+        err "ssh is already running (pid $(get_pid 2)), can't monitor it"
+        exit 1
     fi
 fi
 
@@ -170,22 +170,24 @@ set_pid 1 "$$"
 err "[$(date)] starting"
 while true; do
     if $http; then
-	if ! is_running 3; then
-	    htc -F $http_port $host:$port >> "$log" 2>&1
-	    set_pid 3 "$!"
-	fi
-	cmd_host=localhost
-	cmd_port=$http_port
+        if ! is_running 3; then
+            htc -F $http_port $host:$port >> "$log" 2>&1
+            set_pid 3 "$!"
+        fi
+        cmd_host=localhost
+        cmd_port=$http_port
+        cmd_alias="-o HostKeyAlias=rssht_${host}_$port"
     else
-	cmd_host=$host
-	cmd_port=$port
+        cmd_host=$host
+        cmd_port=$port
+        cmd_alias=
     fi
     if test -z "$key"; then
-	# TODO FIXME does not block (because no tty?)
-	ssh -nxNTC -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+        # TODO FIXME does not block (because no tty?)
+        ssh -nxNTC $cmd_alias -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
     else
-	# TODO FIXME does not block (because no tty?)
-	ssh -nxNTC -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+        # TODO FIXME does not block (because no tty?)
+        ssh -nxNTC $cmd_alias -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
     fi
     set_pid 2 "$!"
     wait %1
