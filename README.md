@@ -8,7 +8,7 @@ When the connection is lost (because the remote client has been shut down, or be
 
 ## Documentation
 
-An extensive documentation is available on [Read the Docs](http://rssht.readthedocs.org/).
+An extensive documentation is available on [Read the Docs](http://rssht.readthedocs.io/).
 
 ## Reporting bugs
 
