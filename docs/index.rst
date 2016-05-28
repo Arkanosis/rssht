@@ -97,7 +97,7 @@ Usage
 
 ::
 
-    rssht [user@]host[:port] [-f port] [-t port] [-k key] [-n time] [--http] [-d]
+    rssht [user@]host[:port] [-f port] [-t port] [-k key] [-n time] [-p [user@]proxy[:port]] [--http] [-d]
 
 The following options are supported:
 
@@ -108,6 +108,7 @@ The following options are supported:
 * **-t port**: open SSH port on local host to forward on the client host [default: 22]
 * **-k key**: the SSH private key to use exclusively on the local host [default: ~/.ssh/rssht_id_rsa]
 * **-n time**: restore connection *time* seconds after failure [default: 5]
+* **-p [user@]proxy[:port]**: use the proxy to connect to the client [default username: same as local username; default port: 22]
 * **--http**: use SSH over HTTP instead of plain ssh. The client port must forward HTTP traffic to an open SSH port (using httptunnel's :code:`hts`)
 * **-d**: run as daemon
 

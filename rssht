@@ -2,7 +2,7 @@
 
 usage() {
     cat >&2 <<EOF
-Usage: rssht [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
+Usage: rssht [user@]host[:port] [-f port] [-t port] [-n time] [-p [user@]proxy[:port]] [--http] [-d]
   host: client hostname
   user: username on client host (should have limited rights) [default: same as local username]
   port: open port on client host [default: 22 for ssh, 80 for http]
@@ -10,6 +10,7 @@ Usage: rssht [user@]host[:port] [-f port] [-t port] [-n time] [--http] [-d]
   -t port: open ssh port on local host to forward on the client host [default: 22]
   -k key: the SSH private key to use exclusively on the local host [default: ~/.ssh/rssht_id_rsa]
   -n time: restore connection time seconds after failure [default: 5]
+  -p [user@]proxy[:port]: use the proxy to connect to the client [default username: same as local username; default port: 22]
   --http: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port
   -d: run as daemon
 EOF
@@ -33,6 +34,10 @@ key=
 from=22000
 to=22
 time=5
+proxy=
+proxy_user=
+proxy_host=
+proxy_port=
 http=false
 daemon=false
 
@@ -61,6 +66,11 @@ while test $# -gt 0; do
         -n)
             check_args "$@"
             time="$2"
+            shift
+        ;;
+        -p)
+            check_args "$@"
+            proxy="$2"
             shift
         ;;
         --http)
@@ -96,6 +106,20 @@ if test -z "$port"; then
         port=80
     else
         port=22
+    fi
+fi
+
+if test -n "$proxy"; then
+    proxy_user=$(echo "$proxy" | sed -n 's/\(.*\)@.*/\1/p')
+    proxy_host=$(echo "$proxy" | sed -n 's/\(.*@\)\?\([^:]*\)\(:.*\)\?/\2/p')
+    proxy_port=$(echo "$proxy" | sed -n 's/[^:]*:\(.*\)/\1/p')
+
+    if test -z "$proxy_user"; then
+        proxy_user="$USER"
+    fi
+
+    if test -z "$proxy_port"; then
+        proxy_port=22
     fi
 fi
 
@@ -182,12 +206,22 @@ while true; do
         cmd_port=$port
         cmd_alias=
     fi
-    if test -z "$key"; then
-        # TODO FIXME does not block (because no tty?)
-        ssh -nxNTC $cmd_alias -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+    if test -n "$proxy"; then
+        if test -z "$key"; then
+            # TODO FIXME does not block (because no tty?)
+            ssh -nxNTC $cmd_alias -o ProxyCommand="ssh $cmd_alias $proxy_user@$proxy_host -p $proxy_port -W $cmd_host:$cmd_port" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+        else
+            # TODO FIXME does not block (because no tty?)
+            ssh -nxNTC $cmd_alias -o ProxyCommand="ssh $cmd_alias -o ControlMaster=no -o IdentitiesOnly=yes -i $key $proxy_user@$proxy_host -p $proxy_port -W $cmd_host:$cmd_port" -o ControlMaster=no -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+        fi
     else
-        # TODO FIXME does not block (because no tty?)
-        ssh -nxNTC $cmd_alias -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+        if test -z "$key"; then
+            # TODO FIXME does not block (because no tty?)
+            ssh -nxNTC $cmd_alias $cmd_proxy -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+        else
+            # TODO FIXME does not block (because no tty?)
+            ssh -nxNTC $cmd_alias $cmd_proxy -o ControlMaster=no -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+        fi
     fi
     set_pid 2 "$!"
     wait %1
