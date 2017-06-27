@@ -1,4 +1,4 @@
-# rssht [![License](http://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE) [![Documentation Status](https://readthedocs.org/projects/rssht/badge/?version=latest)](http://rssht.readthedocs.org/en/latest/?badge=latest)
+# rssht [![License](http://img.shields.io/badge/license-ISC-blue.svg)](/LICENSE) [![Documentation Status](https://readthedocs.org/projects/rssht/badge/?version=latest)](http://rssht.readthedocs.org/en/latest/?badge=latest)
 
 **rssht** creates and maintains a reverse SSH tunnel with optional SSH over HTTP.
 
@@ -16,7 +16,7 @@ Please report bugs and feature requests on [Github](https://github.com/Arkanosis
 
 ## License
 
-rssht is copyright (C) 2015 Jérémie Roquet <jroquet@arkanosis.net> and licensed under the MIT license.
+rssht is copyright (C) 2015-2017 Jérémie Roquet <jroquet@arkanosis.net> and licensed under the ISC license.
 
 ## Related projects
 
