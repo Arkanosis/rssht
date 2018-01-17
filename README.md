@@ -16,7 +16,7 @@ Please report bugs and feature requests on [Github](https://github.com/Arkanosis
 
 ## License
 
-rssht is copyright (C) 2015-2017 Jérémie Roquet <jroquet@arkanosis.net> and licensed under the ISC license.
+rssht is copyright (C) 2015-2018 Jérémie Roquet <jroquet@arkanosis.net> and licensed under the ISC license.
 
 ## Related projects
 

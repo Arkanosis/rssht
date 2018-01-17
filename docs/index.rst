@@ -207,7 +207,7 @@ You can contribute by reporting bugs and feature requests on `Github <https://gi
 License
 -------
 
-Copyright (C) 2015-2017 Jérémie Roquet <jroquet@arkanosis.net>
+Copyright (C) 2015-2018 Jérémie Roquet <jroquet@arkanosis.net>
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

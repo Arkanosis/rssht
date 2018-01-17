@@ -190,6 +190,8 @@ fi
 # probability). This is because we can't reserve a free port for future use by SSH.
 http_port=$(free_port $(random_port 8022))
 
+monitor="-o ServerAliveInterval=30 -o ServerAliveCountMax=3"
+
 set_pid 1 "$$"
 err "[$(date)] starting"
 while true; do
@@ -209,18 +211,18 @@ while true; do
     if test -n "$proxy"; then
         if test -z "$key"; then
             # TODO FIXME does not block (because no tty?)
-            ssh -nxNTC $cmd_alias -o ProxyCommand="ssh $cmd_alias $proxy_user@$proxy_host -p $proxy_port -W $cmd_host:$cmd_port" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+            ssh -nxNTC $monitor $cmd_alias -o ProxyCommand="ssh $monitor $cmd_alias $proxy_user@$proxy_host -p $proxy_port -W $cmd_host:$cmd_port" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
         else
             # TODO FIXME does not block (because no tty?)
-            ssh -nxNTC $cmd_alias -o ProxyCommand="ssh $cmd_alias -o ControlMaster=no -o IdentitiesOnly=yes -i $key $proxy_user@$proxy_host -p $proxy_port -W $cmd_host:$cmd_port" -o ControlMaster=no -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+            ssh -nxNTC $monitor $cmd_alias -o ProxyCommand="ssh $monitor $cmd_alias -o ControlMaster=no -o IdentitiesOnly=yes -i $key $proxy_user@$proxy_host -p $proxy_port -W $cmd_host:$cmd_port" -o ControlMaster=no -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
         fi
     else
         if test -z "$key"; then
             # TODO FIXME does not block (because no tty?)
-            ssh -nxNTC $cmd_alias $cmd_proxy -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+            ssh -nxNTC $monitor $cmd_alias $cmd_proxy -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
         else
             # TODO FIXME does not block (because no tty?)
-            ssh -nxNTC $cmd_alias $cmd_proxy -o ControlMaster=no -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
+            ssh -nxNTC $monitor $cmd_alias $cmd_proxy -o ControlMaster=no -o IdentitiesOnly=yes -i "$key" -R$from:localhost:$to $user@$cmd_host -p $cmd_port >> "$log" 2>&1 &
         fi
     fi
     set_pid 2 "$!"
