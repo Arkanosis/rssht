@@ -17,18 +17,26 @@ rssht is not yet packaged, but the latest version is available for download `on 
 
 If you plan to use the optional SSH over HTTP feature, you will also need to install `httptunnel <https://www.gnu.org/software/httptunnel/httptunnel.html>`_ on both the local host *and* the client host.
 
-On Debian-based systems, use the following on the local host:
+To install rssht, use the following on the local host:
 
 ::
 
-     sudo wget 'https://raw.githubusercontent.com/Arkanosis/rssht/master/rssht' -O /usr/bin/rssht
-     sudo chmod a+x /usr/bin/rssht
+    sudo wget 'https://raw.githubusercontent.com/Arkanosis/rssht/master/rssht' -O /usr/bin/rssht
+    sudo chmod a+x /usr/bin/rssht
 
-And if you want to use SSH over HTTP, use the following on both the local host *and* the client host:
+If you want to use SSH over HTTP, install httptunnel on both the local host *and* the client host.
+
+On Debian-based systems, use:
 
 ::
 
-     sudo apt-get install httptunnel
+    sudo apt install httptunnel
+
+… and on Arch-based systems, use:
+
+::
+
+    sudo pacman -S httptunnel
 
 Note that you can of course install httptunnel and rssht anywhere, as long as the binaries are in your :code:`$PATH`.
 
@@ -78,17 +86,29 @@ Security considerations
 
 Using a dedicated user on the client host (user B in the `Setting up SSH`_ section), with no right appart from being able to connect via SSH is recommended. This prevents the local host from doing anything nasty on the client host. This is particulary important if the local host is outside of your control (eg. a corporate host), and even more important as it will connect using a passphraseless private key.
 
-Creating such a user depends on the system. On Debian-based systems, use the following on the client host to create a user named “rssht-user”:
+Use the following on the client host to create a user named “rssht-user” who can connect with SSH:
 
 ::
 
-    sudo adduser rssht-user # Create the user
-    sudo usermod -s /bin/false rssht-user # Forbid anything else than SSH
+    sudo useradd rssht-user -m -s /bin/false # Create the user with home directory and forbid anything other than SSH
     sudo mkdir ~rssht-user/.ssh # Create the SSH configuration directory
     sudo cat rssht_id_rsa.pub >> ~rssht-user/.ssh/authorized_keys # Allow the local host to connect on the client host as rssht-user; the rssht_id_rsa.pub file must have been copied from the local host
     sudo chown -R rssht-user:rssht-user ~rssht-user/.ssh # Restore correct ownership
     sudo sed -i 's/AllowUsers .*/& rssht-user/' /etc/ssh/sshd_config # Allow rssht-user to connect via SSH
-    sudo restart ssh # Restart SSH
+
+Restart the SSH daemon for the last change to be taken into account.
+
+On Debian-based systems, use:
+
+::
+
+    sudo service ssh restart
+
+… and on Arch-based systems, use:
+
+::
+
+    sudo servicectl restart sshd.service
 
 Usage
 -----
@@ -155,11 +175,19 @@ Troubleshooting
 
 There is unfortunately a lot of ways for the reverse tunnel not to work.
 
-The place to start troubleshooting is the authentification log file on the *remote client*:
+The place to start troubleshooting is the authentification log on the *remote client*.
+
+On Debian-based systems, use:
 
 ::
 
-    tail -f /var/log/auth.log
+    sudo tail -f /var/log/auth.log
+
+(note that the use of :code:`sudo` is not necessary on Ubuntu), and on Arch-based systems, use:
+
+::
+
+    sudo journald -fu sshd
 
 Login attempts from the *local host* will be logged there and it is often possible to understand what is going wrong just by looking at this file.
 
