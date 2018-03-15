@@ -1,18 +1,28 @@
 #! /bin/sh
 
+VERSION='v0.3.0'
+
 usage() {
     cat >&2 <<EOF
 Usage: rssht [user@]host[:port] [-f port] [-t port] [-n time] [-p [user@]proxy[:port]] [--http] [-d]
-  host: client hostname
-  user: username on client host (should have limited rights) [default: same as local username]
-  port: open port on client host [default: 22 for ssh, 80 for http]
-  -f port: free port on client host which will redirect to the local host [default: 22000]
-  -t port: open ssh port on local host to forward on the client host [default: 22]
-  -k key: the SSH private key to use exclusively on the local host [default: ~/.ssh/rssht_id_rsa]
-  -n time: restore connection time seconds after failure [default: 5]
-  -p [user@]proxy[:port]: use the proxy to connect to the client [default username: same as local username; default port: 22]
-  --http: use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port
-  -d: run as daemon
+       rssht -h | --help
+       rssht --version
+
+Arguments:
+    host                   Client hostname
+    user                   Username on client host (should have limited rights) [default: same as local username]
+    port                   Open port on client host [default: 22 for ssh, 80 for http]
+
+Options:
+    -f port                Free port on client host which will redirect to the local host [default: 22000]
+    -t port                Open ssh port on local host to forward on the client host [default: 22]
+    -k key                 SSH private key to use exclusively on the local host [default: ~/.ssh/rssht_id_rsa]
+    -n time                Restore connection time seconds after failure [default: 5]
+    -p [user@]proxy[:port] Use the proxy to connect to the client [default username: same as local username; default port: 22]
+    --http                 Use ssh over http instead of plain ssh. The client port must forward http traffic to an open ssh port
+    -d                     Run as daemon
+    -h, --help             Show this screen.
+    --version              Show version.
 EOF
 }
 
@@ -41,8 +51,13 @@ proxy_port=
 http=false
 daemon=false
 
-if test $# -eq 0; then
+if test $# -eq 0 || test "x$1" = 'x-h' || test "x$1" = 'x--help'; then
     usage
+    exit 0
+fi
+
+if test "x$1" = 'x--version'; then
+    echo "rssht $VERSION"
     exit 0
 fi
 

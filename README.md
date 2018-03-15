@@ -1,4 +1,4 @@
-# rssht [![License](http://img.shields.io/badge/license-ISC-blue.svg)](/LICENSE) [![Documentation Status](https://readthedocs.org/projects/rssht/badge/?version=latest)](http://rssht.readthedocs.org/en/latest/?badge=latest)
+# rssht [![Version](https://img.shields.io/badge/version-v0.3.0-orange.svg)](https://semver.org/spec/v2.0.0.html) [![License](http://img.shields.io/badge/license-ISC-blue.svg)](/LICENSE) [![Documentation Status](https://readthedocs.org/projects/rssht/badge/?version=latest)](http://rssht.readthedocs.org/en/latest/?badge=latest)
 
 **rssht** creates and maintains a reverse SSH tunnel with optional SSH over HTTP.
 
@@ -10,9 +10,11 @@ When the connection is lost (because the remote client has been shut down, or be
 
 An extensive documentation is available on [Read the Docs](http://rssht.readthedocs.io/).
 
-## Reporting bugs
+## Contributing and reporting bugs
 
-Please report bugs and feature requests on [Github](https://github.com/Arkanosis/rssht/issues).
+Contributions are welcome through [GitHub pull requests](https://github.com/Arkanosis/rssht/pulls).
+
+Please report bugs and feature requests on [GitHub issues](https://github.com/Arkanosis/rssht/issues).
 
 ## License
 
