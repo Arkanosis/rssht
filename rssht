@@ -3,7 +3,7 @@
 VERSION='v0.3.0'
 
 usage() {
-    cat >&2 <<EOF
+    cat <<EOF
 Usage: rssht [user@]host[:port] [-f port] [-t port] [-n time] [-p [user@]proxy[:port]] [--http] [-d]
        rssht -h | --help
        rssht --version
@@ -28,7 +28,7 @@ EOF
 
 check_args() {
     if test $# -lt 2; then
-        echo "Missing argument to option $1"
+        echo "Missing argument to option $1" >&2
         exit 1
     fi
 }
@@ -96,7 +96,7 @@ while test $# -gt 0; do
         ;;
         *)
             if test -n "$host"; then
-                usage
+                usage >&2
                 exit 1
             fi
             user=$(echo "$1" | sed -n 's/\(.*\)@.*/\1/p')
@@ -112,7 +112,7 @@ if test -z "$user"; then
 fi
 
 if test -z "$host"; then
-    usage
+    usage >&2
     exit 1
 fi
 
@@ -244,7 +244,7 @@ while true; do
     wait %1
     err "[$(date)] stopped"
     sleep "$time"
-    err "[$(date)] restarting" >&2
+    err "[$(date)] restarting"
 done
 
 # TODO trap ctrl+c, otherwise this will never happen
