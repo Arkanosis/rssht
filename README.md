@@ -18,7 +18,7 @@ Please report bugs and feature requests on [GitHub issues](https://github.com/Ar
 
 ## License
 
-rssht is copyright (C) 2015-2018 Jérémie Roquet <jroquet@arkanosis.net> and licensed under the ISC license.
+rssht is copyright (C) 2015-2023 Jérémie Roquet <jroquet@arkanosis.net> and licensed under the ISC license.
 
 ## Related projects
 

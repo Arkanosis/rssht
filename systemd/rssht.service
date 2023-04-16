@@ -1,0 +1,11 @@
+[Unit]
+Description=Reverse SSH tunnel
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http > /dev/null 2>&1
+
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

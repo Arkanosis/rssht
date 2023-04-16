@@ -154,7 +154,7 @@ If the connection is lost, rssht will restore the tunnel after a few seconds, so
 
 If you are using SSH over HTTP and for some reason :code:`hts` is hanging after losing the connection (it happens), kill it, start it again and wait for rssht to restore the tunnel.
 
-If you are looking for a persistent reverse SSH tunnel, then you probably want it to be restored even if the local host is rebooted. The recommended approach is to start rssht using crontab.
+If you are looking for a persistent reverse SSH tunnel, then you probably want it to be restored even if the local host is rebooted. The recommended approach is to start rssht using cron.
 
 ::
 
@@ -165,6 +165,27 @@ This command opens a list of tasks to be run by the cron service. Add a line as 
 ::
 
     @reboot /usr/bin/rssht rssht-user@httptunnel.example.com:80 -f 12345 -t 22 --http > /dev/null 2>&1
+
+If you prefer using a systemd service rather than cron, you can download the example service:
+
+
+::
+
+    wget 'https://raw.githubusercontent.com/Arkanosis/rssht/master/systemd/rssht.service' -O ~/.config/systemd/user/rssht.service
+
+… edit it with you own settings, and then enable it:
+
+
+::
+
+  systemctl --user enable --now rssht
+
+Be aware that a systemd user service is only started after the first login of a user and is stopped when the user session ends, unless lingering is enabled for that user (in which case, the user service is started after boot and is only stopped at shutdown). To enable lingering for your user, use:
+
+
+::
+
+  sudo loginctl enable-linger $USER
 
 Note that for rssht to restore the tunnel, the remote client's public key must be present in the local host's (ie. the user A's) :code:`~/.ssh/known_hosts`.
 
@@ -235,7 +256,7 @@ You can contribute by reporting bugs and feature requests on `Github <https://gi
 License
 -------
 
-Copyright (C) 2015-2018 Jérémie Roquet <jroquet@arkanosis.net>
+Copyright (C) 2015-2023 Jérémie Roquet <jroquet@arkanosis.net>
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

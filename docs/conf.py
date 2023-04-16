@@ -44,7 +44,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'rssht'
-copyright = u'2015-2018, Jérémie Roquet'
+copyright = u'2015-2023, Jérémie Roquet'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -264,7 +264,7 @@ texinfo_documents = [
 epub_title = u'rssht'
 epub_author = u'Jérémie Roquet'
 epub_publisher = u'Jérémie Roquet'
-epub_copyright = u'2015-2018, Jérémie Roquet'
+epub_copyright = u'2015-2023, Jérémie Roquet'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'rssht'
