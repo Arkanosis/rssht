@@ -7,6 +7,8 @@ In other words, it opens a port on a *remote client* (ie. the machine you want t
 
 When the connection is lost (because the remote client has been shut down, or because of a network issue), rssht takes care of re-establishing the tunnel.
 
+It is useful when all you have on the machine you want to connect to is a SSH client and no root access. If you are root on the machine you want to connect to, you may prefer using a tool like `Nebula <https://github.com/slackhq/nebula>`_.
+
 Installation
 ------------
 
